@@ -314,6 +314,9 @@ func (a *amiAdapter) openConnection() (net.Conn, error) {
 func readMessage(r *bufio.Reader) (m map[string]string, err error) {
 	m = make(map[string]string)
 	var responseFollows bool
+	var counters map[string]int
+	counters  = make(map[string]int)
+
 	for {
 		kv, _, err := r.ReadLine()
 		if len(kv) == 0 {
@@ -364,6 +367,14 @@ func readMessage(r *bufio.Reader) (m map[string]string, err error) {
 			responseFollows = true
 		}
 
+		val, ok := counters[key]
+		counterKey := key
+		counter := 1
+		if ok {
+				key = key + strconv.Itoa(val)
+				counter = val + 1
+		}
+		counters[counterKey] = counter
 		m[key] = value
 
 		if err != nil {
